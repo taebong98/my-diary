@@ -15,22 +15,24 @@ const DiaryEditor = () => {
     };
 
     const handleSubmit = () => {
-        console.log(state);
-        const apiUrl = "http://localhost:8080/posts/diary";
+        console.log("저장성공");
+        alert("저장성공");
+        // console.log(state);
+        // const apiUrl = "http://localhost:8080/posts/diary";
 
-        fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(state),
-        })
-            .then((data) => {
-                console.log("저장 성공", data);
-            })
-            .catch((error) => {
-                console.log("저장실패:", error);
-            });
+        // fetch(apiUrl, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify(state),
+        // })
+        //     .then((data) => {
+        //         console.log("저장 성공", data);
+        //     })
+        //     .catch((error) => {
+        //         console.log("저장실패:", error);
+        //     });
     };
 
     return (
@@ -55,6 +57,7 @@ const DiaryEditor = () => {
                 />
             </div>
             <div>
+                <span>오늘의 점수: </span>
                 <select
                     name="emotion"
                     value={state.emotion}
