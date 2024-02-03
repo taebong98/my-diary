@@ -39,7 +39,7 @@ export default ExampleComponent;
 ```
 
 ### useState 중복제거
-```
+``` javascript
 const [state, setState] = useState({
     author: "", // 작성자
     content: "", // 본문
@@ -70,7 +70,7 @@ const [state, setState] = useState({
 ```
 
 ### useState 중복제거 - spread 연산자 사용
-```
+```javascript
 const [state, setState] = useState({
     author: "", // 작성자
     content: "", // 본문
@@ -105,3 +105,37 @@ const [state, setState] = useState({
 </div>
 ```
 
+### useState 중복제거 - 함수로 분리
+```js
+const DiaryEditor = () => {
+    const [state, setState] = useState({
+        author: "",
+        content: "",
+    });
+
+    const handleChangeState = (e) => {
+        setState({
+            ...state,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    return (
+        <div className="DiaryEditor">
+            <h2>오늘의 일기</h2>
+            <div>
+                <input
+                    name="author"
+                    value={state.author}
+                    onChange={(e) => {
+                        handleChangeState(e);
+                    }}
+                />
+            </div>
+    )
+}
+```
+`handleChangeState()` 함수를 콜백으로 전달하여 값이 변경될 때마다 호출
+입력란(`input`, `textarea` 등)의 name 속성에 따라 상태 객체의 속성을 업데이트 하도록 변경
+스프레드 연산(...state)을 사용하여 기존의 상태를 복사하고 새로운 값을 갖는 속성만 업데이트
+주의사항: 입력란의 name 속성과 useState 훅에서 관리하는 상태 객체의 속성 값을 맞춰야함. 즉 name 속성이 author로 설정되어 있다면 상태객체에서도 author 속성을 가지고 있어야함 
