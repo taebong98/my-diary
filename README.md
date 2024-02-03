@@ -139,3 +139,34 @@ const DiaryEditor = () => {
 입력란(`input`, `textarea` 등)의 name 속성에 따라 상태 객체의 속성을 업데이트 하도록 변경
 스프레드 연산(...state)을 사용하여 기존의 상태를 복사하고 새로운 값을 갖는 속성만 업데이트
 주의사항: 입력란의 name 속성과 useState 훅에서 관리하는 상태 객체의 속성 값을 맞춰야함. 즉 name 속성이 author로 설정되어 있다면 상태객체에서도 author 속성을 가지고 있어야함 
+
+# useRef
+### MutableRefObject
+useRef 훅에서 반환하는 객체이다.
+해당 객체를 사용하여 html DOM 요소에 접근할 수 있다.
+
+```js
+const authorInput = useRef();
+
+<input
+    ref={authorInput} // 1. 입력란에 MutableRefObject(authorInput) 객체를 전달해주게 되면 해당 객체를 통해 input 태그에 접근이 가능하다.
+    name="author"
+    value={state.author}
+    onChange={(e) => {
+        handleChangeState(e);
+    }}
+/>
+
+const handleSubmit = () => {
+    if (state.author.length < 1) {
+        authorInput.current.focus(); // 2. (1)에서 전달된 객체를 이용하여 1글자 이상 입력되지 않았을 경우 focus 기능 
+        return;
+    }
+
+    // 이하 생략
+}
+```
+
+- DOM 요소를 선택하는 `useRef()`라는 기능으로 생성한 레퍼런스 객체는 현재 가리키는 값을 current로 접근 가능 
+- 즉, `authorInput.currnet`는 input 태그를 가리킨다.
+

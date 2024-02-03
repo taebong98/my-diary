@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const DiaryEditor = () => {
+    const authorInput = useRef();
+    const contentInput = useRef();
     const [state, setState] = useState({
         author: "",
         content: "",
@@ -15,24 +17,34 @@ const DiaryEditor = () => {
     };
 
     const handleSubmit = () => {
-        console.log("저장성공");
-        alert("저장성공");
-        // console.log(state);
-        // const apiUrl = "http://localhost:8080/posts/diary";
+        if (state.author.length < 1) {
+            authorInput.current.focus();
+            return;
+        }
 
-        // fetch(apiUrl, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify(state),
-        // })
-        //     .then((data) => {
-        //         console.log("저장 성공", data);
-        //     })
-        //     .catch((error) => {
-        //         console.log("저장실패:", error);
-        //     });
+        if (state.content.length < 5) {
+            contentInput.current.focus();
+            return;
+        }
+
+        // API 호출
+        /*
+        const apiUrl = "http://localhost:8080/posts/diary";
+
+        fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(state),
+        })
+            .then((data) => {
+                console.log("저장 성공", data);
+            })
+            .catch((error) => {
+                console.log("저장실패:", error);
+            });
+        */
     };
 
     return (
@@ -40,6 +52,7 @@ const DiaryEditor = () => {
             <h2>오늘의 일기</h2>
             <div>
                 <input
+                    ref={authorInput}
                     name="author"
                     value={state.author}
                     onChange={(e) => {
@@ -49,6 +62,7 @@ const DiaryEditor = () => {
             </div>
             <div>
                 <textarea
+                    ref={contentInput}
                     name="content"
                     value={state.content}
                     onChange={(e) => {
