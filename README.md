@@ -39,7 +39,8 @@ export default ExampleComponent;
 ```
 
 ### useState 중복제거
-``` javascript
+
+```javascript
 const [state, setState] = useState({
     author: "", // 작성자
     content: "", // 본문
@@ -70,6 +71,7 @@ const [state, setState] = useState({
 ```
 
 ### useState 중복제거 - spread 연산자 사용
+
 ```javascript
 const [state, setState] = useState({
     author: "", // 작성자
@@ -96,7 +98,7 @@ const [state, setState] = useState({
             // 동작하지 않음
             setState({ // 새로운 객체가 만들어질 때,
                 content: e.target.value, // 1. 새로 변한 값이 들어옴
-                ...state, // 2. spread 연산을 통해 기존의 값이 덮어 씌워짐 
+                ...state, // 2. spread 연산을 통해 기존의 값이 덮어 씌워짐
                 // 3. 결과적으로 변화한 값이 원래의 값으로 덮어 씌워지기 때문에 아무것도 업데이트가 되지 않는다.
                 // 4. 원래 있던 값을 펼친다음, 변화한 값을 마지막에 업데이트 해야함
             });
@@ -106,6 +108,7 @@ const [state, setState] = useState({
 ```
 
 ### useState 중복제거 - 함수로 분리
+
 ```js
 const DiaryEditor = () => {
     const [state, setState] = useState({
@@ -135,13 +138,16 @@ const DiaryEditor = () => {
     )
 }
 ```
+
 `handleChangeState()` 함수를 콜백으로 전달하여 값이 변경될 때마다 호출
 입력란(`input`, `textarea` 등)의 name 속성에 따라 상태 객체의 속성을 업데이트 하도록 변경
 스프레드 연산(...state)을 사용하여 기존의 상태를 복사하고 새로운 값을 갖는 속성만 업데이트
-주의사항: 입력란의 name 속성과 useState 훅에서 관리하는 상태 객체의 속성 값을 맞춰야함. 즉 name 속성이 author로 설정되어 있다면 상태객체에서도 author 속성을 가지고 있어야함 
+주의사항: 입력란의 name 속성과 useState 훅에서 관리하는 상태 객체의 속성 값을 맞춰야함. 즉 name 속성이 author로 설정되어 있다면 상태객체에서도 author 속성을 가지고 있어야함
 
 # useRef
+
 ### MutableRefObject
+
 useRef 훅에서 반환하는 객체이다.
 해당 객체를 사용하여 html DOM 요소에 접근할 수 있다.
 
@@ -155,18 +161,66 @@ const authorInput = useRef();
     onChange={(e) => {
         handleChangeState(e);
     }}
-/>
+/>;
 
 const handleSubmit = () => {
     if (state.author.length < 1) {
-        authorInput.current.focus(); // 2. (1)에서 전달된 객체를 이용하여 1글자 이상 입력되지 않았을 경우 focus 기능 
+        authorInput.current.focus(); // 2. (1)에서 전달된 객체를 이용하여 1글자 이상 입력되지 않았을 경우 focus 기능
         return;
     }
 
     // 이하 생략
-}
+};
 ```
 
-- DOM 요소를 선택하는 `useRef()`라는 기능으로 생성한 레퍼런스 객체는 현재 가리키는 값을 current로 접근 가능 
-- 즉, `authorInput.currnet`는 input 태그를 가리킨다.
+-   DOM 요소를 선택하는 `useRef()`라는 기능으로 생성한 레퍼런스 객체는 현재 가리키는 값을 current로 접근 가능
+-   즉, `authorInput.currnet`는 input 태그를 가리킨다.
 
+# 데이터 추가하기
+
+```js
+function App() {
+    // 상태 변수 data와 해당 상태를 업데이트하는 함수 setData를 생성, 기본값을 배열로 지정
+    const [data, setData] = useState([]);
+
+    // useRef를 사용하여 고유한 ID를 생성하는 변수 dataId를 생성, 실제로 데이터베이스 PK를 사용하는 것이 좋다.
+    const dataId = useRef(0);
+
+    // onCreate 함수는 DiaryEditor에서 호출되어 새로운 일기를 생성하고 상태를 업데이트 한다.
+    const onCreate = (author, content, emotion) => {
+        // 현재 시간을 밀리초로 받아온다. 실제로 서버에서 응답을 받아 사용할 수 있다.
+        const created_date = new Date().getTime();
+
+        // 새로운 항목(newItem)을 생성
+        const newItem = {
+            author,
+            content,
+            emotion,
+            created_date,
+            // dataId.current를 사용하여 현재 ID를 받아와 항목의 ID로 설정
+            id: dataId.current,
+        };
+
+        // dataId.current를 증가시켜 다음 항목에 대한 ID를 준비
+        dataId.current += 1;
+
+        // setData를 사용하여 기존의 data 배열에 새로운 항목을 추가
+        setData([newItem, ...data]);
+
+        // 저장 후 작성한 본문을 초기화
+        setState({
+            author: "",
+            content: "",
+            emotion: 1,
+        });
+    };
+
+    // DiaryEditor 컴포넌트를 렌더링하고, onCreate 함수를 props로 전달
+    return (
+        <div>
+            {/* DiaryEditor 컴포넌트를 렌더링하고, onCreate 함수를 props로 전달 */}
+            <DiaryEditor onCreate={onCreate} />
+        </div>
+    );
+}
+```
