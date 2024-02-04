@@ -247,3 +247,108 @@ const onDelete = (targetId) => {
     삭제하기
 </button>
 ```
+
+# 데이터 수정하기
+```js
+const DiaryItem = ({
+    id,
+    author,
+    content,
+    emotion,
+    created_date,
+    onRemove,
+    onEdit,
+}) => {
+    // 수정 중인지 여부를 나타내는 상태 변수와 해당 상태를 업데이트하는 함수를 생성
+    const [isEdit, setIsEdit] = useState(false);
+    // isEdit이 true일 때, 수정 중인 내용을 저장하는 상태 변수와 해당 상태를 업데이트하는 함수를 생성
+    const [localContent, setLocalContent] = useState(content);
+    // 수정 중인 내용을 입력할 때 사용하는 ref 변수를 생성
+    const localContentInput = useRef();
+
+    // 수정 중인지 여부를 토글하는 함수를 정의
+    const toggleIsEdit = () => {
+        setIsEdit(!isEdit);
+    };
+
+    // 삭제 버튼 클릭 시 처리하는 함수를 정의
+    const handleRemove = () => {
+        // 사용자에게 확인 메시지를 띄우고, 확인 시 onRemove 함수를 호출하여 일기를 삭제
+        if (window.confirm(`${id}번째 일기를 삭제하시겠습니까?`)) {
+            onRemove(id); // App 컴포넌트의 상태를 변경하는 작업이기 때문에 App 컴포넌트에 정의되어 있음
+        }
+    };
+
+    // 수정 취소 버튼 클릭 시 처리하는 함수를 정의
+    const handleQuitEdit = () => {
+        // 수정 중이던 상태를 종료하고,
+        setIsEdit(false);
+
+        // 수정 중인 내용을 원래 내용(content)으로 복구
+        setLocalContent(content);
+    };
+
+    // 수정 완료 버튼 클릭 시 처리하는 함수를 정의
+    const handleEdit = () => {
+        // 수정 중인 내용이 일정 길이 미만인 경우, 입력 필드에 포커스를 맞추고 함수를 종료 => 생성과 같은 조건을 맞춰야함
+        if (localContent.length < 5) {
+            localContentInput.current.focus();
+            return;
+        }
+
+        // 사용자에게 확인 메시지를 띄우고, 확인 시 onEdit 함수를 호출하여 일기를 수정
+        if (window.confirm(`${id}번째 일기를 수정하시겠습니까?`)) {
+            onEdit(id, localContent); // App 컴포넌트의 상태를 변경하는 작업이기 때문에 App 컴포넌트에 정의되어 있음
+
+            // 수정 완료 후 수정 중인 상태를 토글하여 수정창을 닫는다.
+            toggleIsEdit();
+        }
+    };
+
+    // JSX로 일기 항목을 렌더링
+    return (
+        <div className="DiaryItem">
+            <div className="info">
+                <span>
+                    작성자 : {author} | 감정 점수 : {emotion}
+                </span>
+                <br />
+                <span className="date">
+                    {new Date(created_date).toLocaleString()}
+                </span>
+            </div>
+            <div className="content">
+                {/* 수정 중인 경우 textarea로 수정 중인 내용을 보여준다. */}
+                {isEdit ? (
+                    <>
+                        <textarea
+                            ref={localContentInput}
+                            value={localContent}
+                            onChange={(e) => {
+                                // 수정 중인 내용을 업데이트한다.
+                                setLocalContent(e.target.value);
+                            }}
+                        />
+                    </>
+                ) : (
+                    // 수정 중이 아닌 경우에는 내용을 그대로 출력한다.
+                    <>{content}</>
+                )}
+            </div>
+
+            {/* 수정 중인 상태에 따라 버튼을 다르게 표시한다. */}
+            {isEdit ? (
+                <>
+                    <button onClick={handleQuitEdit}>수정취소</button>
+                    <button onClick={handleEdit}>수정완료</button>
+                </>
+            ) : (
+                <>
+                    <button onClick={handleRemove}>삭제하기</button>
+                    <button onClick={toggleIsEdit}>수정하기</button>
+                </>
+            )}
+        </div>
+    );
+};
+```
