@@ -1,6 +1,6 @@
 import DiaryItem from "./DiaryItem";
 
-const DiaryList = ({ diaryList }) => {
+const DiaryList = ({ onDelete, diaryList }) => {
     return (
         <div className="DiaryList">
             <h2>일기 리스트</h2>
@@ -10,7 +10,7 @@ const DiaryList = ({ diaryList }) => {
             <div>
                 {/* 3. map 함수를 사용하여 diaryList의 각 원소(it)에 대한 일기정보를 포함한 JSX를 반환한다.   */}
                 {diaryList.map((it) => (
-                    <DiaryItem key={it.id} {...it} /> // it이라는 객체가 포함하는 모든 데이터를 DiaryItem의 Prop으로 내려준다.
+                    <DiaryItem key={it.id} {...it} onDelete={onDelete} /> // it이라는 객체가 포함하는 모든 데이터를 DiaryItem의 Prop으로 내려준다.
                 ))}
             </div>
         </div>

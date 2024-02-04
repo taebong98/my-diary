@@ -224,3 +224,26 @@ function App() {
     );
 }
 ```
+
+# 데이터 삭제하기
+```js
+// onDelete 함수 정의: targetId에 해당하는 일기를 삭제하고 상태를 업데이트하는 역할
+const onDelete = (targetId) => {
+    // filter 함수를 사용하여 targetId와 일치하지 않는 항목들만으로 이루어진 새로운 배열을 생성
+    const newDiaryList = data.filter((it) => it.id !== targetId);
+    // setData 함수를 사용하여 상태를 업데이트
+    setData(newDiaryList);
+};
+
+// 삭제하기 버튼을 눌렀을 때의 처리를 담은 JSX 코드
+<button
+    onClick={() => {
+        // 사용자에게 확인 메시지를 띄우고, 확인 시 onDelete 함수를 호출하여 일기를 삭제
+        if (window.confirm(`${id}번째 일기를 삭제하시겠습니까?`)) {
+            onDelete(id);
+        }
+    }}
+>
+    삭제하기
+</button>
+```
