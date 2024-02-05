@@ -391,7 +391,8 @@ const DiaryItem = ({
 
 -   useEffect의 첫번째 파라미터에 콜백함수 전달
 -   두번째 파라미터에 Dependecy Array라고 불리는 배열을 전달
-    - depth, Dependecy Array, 의존성 배열 등으로 부른다.
+    -   depth, Dependecy Array, 의존성 배열 등으로 부른다.
+
 ```js
 useEffect(() => {
     // 콜백함수로 동작 정의
@@ -428,4 +429,82 @@ const UnmountTest = () => {
 
     return <div>Unmount Test Component</div>;
 };
+```
+
+# useReducer
+
+컴포넌트에서 상태변화 로직을 분리
+
+App 컴포넌트는 복잡하고 많은 상태 변화 로직을 가지고 있다.
+
+-   onCreate, onEdit, onRemove 등
+-   컴포넌트가 가지고 있는 데이터를 참조해야 하기 때문에, 함수 바깥으로 분리하기 어려움
+-   이렇게 코드가 많아지면서 컴포넌트가 무거워지는 것은 좋은 코드가 아님
+
+```js
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+-   state: 현재 상태를 나타내는 변수
+-   dispatch: 액션을 발생시켜 상태를 업데이트 하는 함수
+-   reducer: 상태를 업데이트하는 로직이 정의된 함수
+-   initialState: 초기 상태 값
+
+`useReducer`를 사용하면 상태 로직을 담당하는 로직이 별도의 함수인 reducer 함수로 분리된다. reducer 함수는 현재 상태(`state`)와 액션(`action`)을 받아 새로운 상태를 반환한다.
+
+### dispatch
+
+```js
+const [count, dispatch] = useReducer(reducer, 1);
+
+<button onClick={() => dispatch({ type: 1 })}>add1</button>;
+<button onClick={() => dispatch({ type: 10 })}>add10</button>;
+<button onClick={() => dispatch({ type: 100 })}>add100</button>;
+```
+
+1. `add` 버튼을 누르면 dispatch 함수가 호출된다.
+2. dispatch 함수가 전달하는 객체에는 `type`이라는 프로퍼티를 전달해야하고, 이 객체를 `action` 객체라고 부른다.
+    - `action`은 상태변화를 의미한다.
+3. dispatch애 전달된 action 객체는 reducer로 날아간다.
+
+### reducer
+
+dispatch가 호출되면 상태변화가 일어나야하고, 상태변화에 대한 처리를 reducer가 수행한다.
+
+-   첫번째 인자는 현재 상태인 state를 받는다.
+-   두번째 인자는 dispatch에 전달된 action 객체를 받는다.
+
+```js
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 1:
+            return state + 1;
+        case 10:
+            return state + 10;
+        case 100:
+            return state + 100;
+        default:
+            return state;
+    }
+};
+```
+
+4. add100 버튼을 누르면 `dispatch({type: 100})` 함수가 실행되고, reducer는 action 객체(`{type: 100}`)을 전달받는다.
+5. 상태변화를 처리하는 reducer 함수에서는 switch-case 문을 이용해서, action의 type에 따른 로직이 수행된다.
+6. 반환하는 값은 새로운 state가 된다.
+
+### App 컴포넌트의 useState를 useReducer로 변경
+
+```js
+// App 컴포넌트의 복잡성을 줄이기 위해 사용하는 Hooks이기 때문에, App 컴포넌트 외부에 정의한다.
+const reducer = (state, action) => {
+    switch (action.type) {
+        case "onCreate":
+    }
+};
+
+function App() {
+    // dispatch를 실행하면 reducer가 실행되고, reducer가 리턴하는 값이 data가 된다.
+    const [data, dispatch] = useReducer(reducer, []);
+}
 ```
