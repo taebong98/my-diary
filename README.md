@@ -508,3 +508,61 @@ function App() {
     const [data, dispatch] = useReducer(reducer, []);
 }
 ```
+
+# React Context
+
+React 애플리케이션에서 전역적으로 상태를 공유할 수 있게 하는 기능이다.
+
+이를 통해 중첩된 컴포넌트 트리에서 prop 전달이나 중간 컴포넌트를 거치지 않고도 데이터를 전달할 수 있다. => props drilling 해결
+
+즉, React Context는 깊게 중첩된 컴포넌트에서 효율적으로 전역 상태를 관리할 수 있도록 도와준다.
+
+React Context를 사용하려면 다음 세가지 요소가 필요하다. (`createContext`, `Provider`, `Consumer`)
+
+### Context 생성: createContext
+
+```js
+const MyContext = React.createContext(defaultValue);
+```
+
+### Context Provider를 통한 공급: Provider
+
+Provider의 자식으로 존재하기만 하면 Provider가 전달하는 값을 사용할 수 있다.
+
+```js
+<MyContext.Provider value={전역적으로 전달하고 싶은 값}>
+    {/*이 Context안에 위치할 자식 컴포넌트들*/}
+</MyContext.Provider>
+```
+
+```js
+// 함수와 상태를 한번에 공급하게 되면 문제 발생 => 상태가 변화할 때마다 리렌더링 되기 때문에 최적화가 다 풀려버림
+export const DiaryStateContext = React.createContext(); // 상태를 공급하는 컴포넌트
+export const DiaryDispatchContext = React.createContext(); // 함수를 공급하는 컴포넌트
+
+function App() {
+    // 생략
+
+    return (
+        // Context로 Component들을 래핑한다.(자식요소로 추가)
+        <DiaryStateContext.Provider value={data}>
+            <div className="App">
+                <DiaryEditor onCreate={onCreate} />
+                <DiaryList
+                    diaryList={data}
+                    onRemove={onRemove}
+                    onEdit={onEdit}
+                />
+            </div>
+        </DiaryStateContext.Provider>
+    );
+}
+
+// App.js 에서 export로 내보낸 Context를 import 받아서 사용
+import { DiaryStateContext } from "./App";
+
+const DiaryList = ({ onEdit, onRemove }) => {
+    // Context를 통해 값을 뽑아서 사용한다.
+    const diaryList = useContext(DiaryStateContext);
+};
+```
