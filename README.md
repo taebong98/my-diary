@@ -226,6 +226,7 @@ function App() {
 ```
 
 # 데이터 삭제하기
+
 ```js
 // onDelete 함수 정의: targetId에 해당하는 일기를 삭제하고 상태를 업데이트하는 역할
 const onDelete = (targetId) => {
@@ -245,10 +246,11 @@ const onDelete = (targetId) => {
     }}
 >
     삭제하기
-</button>
+</button>;
 ```
 
 # 데이터 수정하기
+
 ```js
 const DiaryItem = ({
     id,
@@ -350,5 +352,80 @@ const DiaryItem = ({
             )}
         </div>
     );
+};
+```
+
+# React Lifecycle
+
+### 마운팅(Mounting): ex.초기화 작업
+
+-   `constructor()`: 컴포넌트가 생성될 때 호출되는 메서드로, 초기 설정 및 상태 초기화를 수행한다.
+-   `getDerivedStateFromProps()`: props에 따라 state를 업데이트하는 메서드로 컴포넌트가 마운트되기 전과 업데이트 될 때 호출된다.
+-   `render()`: 컴포넌트의 UI를 렌더링한다.
+-   **`componentDidMount()`**: 컴포넌트가 실제 DOM에 삽입된 후 호출되는 메서드로 초기 데이터 가져오기, 외부 라이브러리 초기화 등에 사용된다.
+
+### 업데이트(Updating): ex.예외처리 작업
+
+-   `getDerivedStateFromProps()`: 마운팅과 동일하게 props에 따라 state를 업데이트하는 메서드로 컴포넌트가 업데이트될 때 호출된다.
+-   `getDerivedStateFromProps()`: 컴포넌트가 리렌더링할지 여부를 결정하는 메서드로 성능 최적화에 주로 활용된다.
+-   `render()`: UI를 업데이트한다.
+-   `getSnapshotBeforeUpdate`: 업데이트가 반영된 후 실제 DOM에 변화가 일어나기 전에 호출되는 메서드이다. 스크롤 위치를 유지하는 등의 작업에 사용된다.
+-   **`componentDidUpdate()`**: 업데이트 반영 이후 호출되는 메서드로, 이전 상태나 props에 기반하여 작업을 수행한다.
+
+### 언마운팅(Unmounting) ex.메모리 정리 작업
+
+-   **`componentWillUnmount()`**: 컴포넌트가 제거되기 전에 호출되는 메서드로, 리소스 해제나 이벤트 리스너 제거 등의 정리작업에 사용된다.
+
+# React Hooks
+
+클래스형 컴포넌트에서만 사용 가능한 기능들을 함수형 컴포넌트에서도 사용할 수 있게 해주는 기능 (useState, useEffect, useRef 등)
+
+### React Hook를 사용하는 이유
+
+-   클래스형 컴포넌트의 길어지는 코드 길이 문제
+-   중복코드, 가독성 문제 등
+
+### useEffect
+
+함수형 컴포넌트에서 react hooks를 이용해서 라이프사이클을 제어하는 기능을 제공
+
+-   useEffect의 첫번째 파라미터에 콜백함수 전달
+-   두번째 파라미터에 Dependecy Array라고 불리는 배열을 전달
+    - depth, Dependecy Array, 의존성 배열 등으로 부른다.
+```js
+useEffect(() => {
+    // 콜백함수로 동작 정의
+}, []); // 의존성 배열 -> 이 배열 내에 들어있는 값에 따라 콜백함수가 수행된다.
+```
+
+```js
+// 컴포넌트가 mount 되는 시점에만 작동한다.
+useEffect(() => {
+    console.log("Mount!");
+}, []);
+
+// 컴포넌트가 update 되는 시점에만 작동한다.
+// update: 컴포넌트가 리렌더링, 부모로부터 내려받는 props가 변경
+useEffect(() => {
+    console.log("Update!");
+});
+
+// Dependency Array의 값이 변화하게 되면 콜백함수가 수행된다.
+useEffect(() => {
+    console.log("count값 변경");
+}, [count]);
+
+// mount가 리턴하는 함수는 unmount 시점에 실행된다
+const UnmountTest = () => {
+    useEffect(() => {
+        // Mount 시점에 실행
+        console.log("Mount!");
+        return () => {
+            // Unmount 시점에 실행
+            console.log("Unmount!");
+        };
+    }, []);
+
+    return <div>Unmount Test Component</div>;
 };
 ```
